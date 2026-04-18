@@ -12,12 +12,24 @@ class AnalyticsScreen extends StatelessWidget {
         child: Column(
           children: [
             Container(
-              height: 150,
+              height: 180,
+              width: double.infinity,
               decoration: BoxDecoration(
-                color: Colors.blue.shade100,
-                borderRadius: BorderRadius.circular(16),
+                gradient: const LinearGradient(
+                    colors: [Color(0xFFE0E7FF), Color(0xFFF0F4FF)],
+                ),
+                borderRadius: BorderRadius.circular(18),
               ),
-              child: const Center(child: Text("Chart Placeholder")),
+              child: const Center(
+                child: Text(
+                  "Weekly Progress Chart",
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                      color: Color(0xFF1E293B),
+                  ),
+                ),
+              ),
             ),
           ],
         ),
