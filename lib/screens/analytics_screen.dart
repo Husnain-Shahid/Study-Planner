@@ -1,0 +1,27 @@
+import 'package:flutter/material.dart';
+
+class AnalyticsScreen extends StatelessWidget {
+  const AnalyticsScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text("Analytics")),
+      body: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          children: [
+            Container(
+              height: 150,
+              decoration: BoxDecoration(
+                color: Colors.blue.shade100,
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: const Center(child: Text("Chart Placeholder")),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
