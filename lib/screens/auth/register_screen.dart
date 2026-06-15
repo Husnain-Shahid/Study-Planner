@@ -1,7 +1,75 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import '../../core/services/firestore_service.dart';
+import '../../core/models/models.dart';
 
-class RegisterScreen extends StatelessWidget {
+class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
+
+  @override
+  State<RegisterScreen> createState() => _RegisterScreenState();
+}
+
+class _RegisterScreenState extends State<RegisterScreen> {
+  final _formKey = GlobalKey<FormState>();
+  final _nameController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
+  bool _isLoading = false;
+  bool _obscurePassword = true;
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+    _confirmPasswordController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _signUp() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    setState(() => _isLoading = true);
+    try {
+      // 1. Create User in Firebase Auth
+      final credential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: _emailController.text.trim(),
+        password: _passwordController.text,
+      );
+
+      if (credential.user != null) {
+        // 2. Create User Document in Firestore
+        final newUser = UserModel(
+          uid: credential.user!.uid,
+          name: _nameController.text.trim(),
+          email: _emailController.text.trim(),
+          role: 'student',
+          createdAt: DateTime.now(),
+        );
+        
+        await FirestoreService.createUser(newUser);
+      }
+
+      if (!mounted) return;
+      // Navigate to Dashboard directly since they are now logged in and initialized
+      Navigator.pushNamedAndRemoveUntil(context, '/dashboard', (route) => false);
+      
+    } on FirebaseAuthException catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.message ?? 'Sign up failed'), backgroundColor: Colors.red),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: ${e.toString()}'), backgroundColor: Colors.red),
+      );
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -10,221 +78,75 @@ class RegisterScreen extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: const Color(0xFF37474F),
         elevation: 0,
-        toolbarHeight: 180,
-        flexibleSpace: Container(
-          decoration: const BoxDecoration(
-            color: Color(0xFF37474F),
-          ),
-          child: const Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              SizedBox(height: 60),
-              Text(
-                "Sign up",
-                style: TextStyle(color: Colors.white70, fontSize: 16),
-              ),
-              SizedBox(height: 20),
-              Text(
-                "StudyMate",
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 36,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              SizedBox(height: 20),
-            ],
-          ),
-        ),
+        toolbarHeight: 120,
+        centerTitle: true,
+        title: const Text("Create Account", style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold)),
       ),
-      body: SafeArea(
+      body: Container(
+        width: double.infinity,
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.only(topLeft: Radius.circular(40), topRight: Radius.circular(40)),
+        ),
         child: SingleChildScrollView(
-          child: Container(
-            width: double.infinity,
-            height: MediaQuery.of(context).size.height - 180,
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
-            decoration: const BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(45),
-                topRight: Radius.circular(45),
-              ),
-            ),
+          padding: const EdgeInsets.all(24),
+          child: Form(
+            key: _formKey,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Center(
-                  child: Text(
-                    "Create your account",
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                    ),
-                  ),
-                ),
+                const Text("Full Name", style: TextStyle(fontWeight: FontWeight.bold)),
                 const SizedBox(height: 8),
-                const Center(
-                  child: Text(
-                    "Join StudyMate and start learning smarter.",
-                    style: TextStyle(color: Colors.grey, fontSize: 14),
-                  ),
-                ),
-                const SizedBox(height: 30),
-                const Text(
-                  "Full Name",
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 8),
-                TextField(
-                  decoration: InputDecoration(
-                    hintText: "Enter your full name",
-                    filled: true,
-                    fillColor: Colors.grey[50],
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(color: Colors.grey.shade200),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(color: Colors.grey.shade200),
-                    ),
-                  ),
+                TextFormField(
+                  controller: _nameController,
+                  decoration: InputDecoration(hintText: "Enter your name", prefixIcon: const Icon(Icons.person_outline)),
+                  validator: (v) => (v ?? "").isEmpty ? "Name is required" : null,
                 ),
                 const SizedBox(height: 20),
                 const Text("Email", style: TextStyle(fontWeight: FontWeight.bold)),
                 const SizedBox(height: 8),
-                TextField(
+                TextFormField(
+                  controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
-                  decoration: InputDecoration(
-                    hintText: "Enter your email",
-                    filled: true,
-                    fillColor: Colors.grey[50],
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(color: Colors.grey.shade200),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(color: Colors.grey.shade200),
-                    ),
-                  ),
+                  decoration: InputDecoration(hintText: "Enter your email", prefixIcon: const Icon(Icons.email_outlined)),
+                  validator: (v) => !(v ?? "").contains("@") ? "Invalid email" : null,
                 ),
                 const SizedBox(height: 20),
-                const Text(
-                  "Password",
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
+                const Text("Password", style: TextStyle(fontWeight: FontWeight.bold)),
                 const SizedBox(height: 8),
-                TextField(
-                  obscureText: true,
+                TextFormField(
+                  controller: _passwordController,
+                  obscureText: _obscurePassword,
                   decoration: InputDecoration(
                     hintText: "Create a password",
-                    filled: true,
-                    fillColor: Colors.grey[50],
-                    suffixIcon: const Icon(
-                      Icons.visibility_off_outlined,
-                      color: Colors.grey,
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(color: Colors.grey.shade200),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(color: Colors.grey.shade200),
+                    prefixIcon: const Icon(Icons.lock_outline),
+                    suffixIcon: IconButton(
+                      icon: Icon(_obscurePassword ? Icons.visibility_off : Icons.visibility),
+                      onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
                     ),
                   ),
+                  validator: (v) => (v ?? "").length < 6 ? "Minimum 6 characters" : null,
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 30),
                 SizedBox(
                   width: double.infinity,
                   height: 55,
                   child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.pushReplacementNamed(context, '/dashboard');
-                    },
-                    style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF37474F),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      elevation: 0,
-                    ),
-                    child: const Text(
-                      "Create Account",
-                      style: TextStyle(fontSize: 16, color: Colors.white),
-                    ),
+                    onPressed: _isLoading ? null : _signUp,
+                    style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF37474F)),
+                    child: _isLoading 
+                        ? const CircularProgressIndicator(color: Colors.white) 
+                        : const Text("Sign Up", style: TextStyle(color: Colors.white, fontSize: 16)),
                   ),
                 ),
                 const SizedBox(height: 20),
-                const Row(
-                  children: [
-                    Expanded(child: Divider()),
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 10),
-                      child: Text(
-                        "or sign up with",
-                        style: TextStyle(color: Colors.grey, fontSize: 12),
-                      ),
-                    ),
-                    Expanded(child: Divider()),
-                  ],
-                ),
-                const SizedBox(height: 20),
-                SizedBox(
-                  width: double.infinity,
-                  height: 52,
-                  child: OutlinedButton.icon(
-                    onPressed: () {},
-                    icon: Container(
-                      width: 20,
-                      height: 20,
-                      decoration: const BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: Colors.white,
-                      ),
-                      alignment: Alignment.center,
-                      child: const Text(
-                        'G',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w700,
-                            color: Color(0xFF1D4ED8),
-                        ),
-                      ),
-                    ),
-                    label: const Text(
-                      'Continue with Google',
-                      style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w600,
-                        color: Color(0xFF1E293B),
-                      ),
-                    ),
-                    style: OutlinedButton.styleFrom(
-                      backgroundColor: Colors.white,
-                      side: BorderSide(color: Colors.grey.shade200),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 30),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     const Text("Already have an account? "),
                     GestureDetector(
                       onTap: () => Navigator.pushReplacementNamed(context, '/login'),
-                      child: const Text(
-                        "Login",
-                        style: TextStyle(
-                          color: Color(0xFF1D4ED8),
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
+                      child: const Text("Login", style: TextStyle(color: Color(0xFF1D4ED8), fontWeight: FontWeight.bold)),
                     ),
                   ],
                 ),
