@@ -63,6 +63,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Analytics'),
+        backgroundColor: AppColors.primary,
         actions: [
           IconButton(
               icon: const Icon(Icons.refresh_rounded),

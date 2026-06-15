@@ -45,7 +45,7 @@ class AppTheme {
       titleTextStyle: TextStyle(
         fontSize: 18,
         fontWeight: FontWeight.w700,
-        color: Color(0xFF0F172A),
+        color: Colors.white,
         fontFamily: 'Poppins',
       ),
     ),

@@ -4,8 +4,10 @@ import 'package:file_picker/file_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
 import 'package:intl/intl.dart';
+import 'package:study_planner/core/theme/app_theme.dart';
 import '../core/services/book_notes_database.dart';
 import 'pdf_view_screen.dart';
+import '../../core/theme/app_theme.dart';
 
 class BookNotesScreen extends StatefulWidget {
   const BookNotesScreen({super.key});
@@ -32,9 +34,11 @@ class _BookNotesScreenState extends State<BookNotesScreen> {
           padding: EdgeInsets.only(bottom: MediaQuery.of(ctx).viewInsets.bottom, top: 20, left: 20, right: 20),
           child: Column(mainAxisSize: MainAxisSize.min, children: [
             TextField(controller: t1, decoration: const InputDecoration(labelText: 'Book Title')),
+            SizedBox(height: 10),
             TextField(controller: t2, decoration: const InputDecoration(labelText: 'Topic')),
+            SizedBox(height: 10),
             TextField(controller: t3, decoration: const InputDecoration(labelText: 'Note')),
-            const SizedBox(height: 10),
+            const SizedBox(height: 20),
             ElevatedButton.icon(icon: const Icon(Icons.upload), label: Text(path == null ? "Attach PDF" : "PDF Attached"),
                 onPressed: () async {
                   final res = await FilePicker.platform.pickFiles(type: FileType.custom, allowedExtensions: ['pdf']);
@@ -45,6 +49,7 @@ class _BookNotesScreenState extends State<BookNotesScreen> {
                     setS(() => path = newPath);
                   }
                 }),
+            SizedBox(height: 20),
             ElevatedButton(child: const Text("Save"), onPressed: () async {
               await BookNotesDatabase.insert(BookNoteItem(title: t2.text, bookTitle: t1.text, content: t3.text, dateAdded: DateFormat('yyyy-MM-dd').format(DateTime.now()), pdfPath: path));
               Navigator.pop(context); _refresh();
@@ -57,7 +62,10 @@ class _BookNotesScreenState extends State<BookNotesScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Study Notes")),
+      appBar: AppBar(
+          title: const Text("Study Notes"),
+          backgroundColor: AppColors.primary
+      ),
       floatingActionButton: FloatingActionButton(onPressed: _addNote, child: const Icon(Icons.add)),
       body: ListView.builder(itemCount: _notes.length, itemBuilder: (ctx, i) => Card(
         child: ListTile(

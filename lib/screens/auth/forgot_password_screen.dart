@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import '../../core/theme/app_theme.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
   const ForgotPasswordScreen({super.key});
@@ -65,15 +66,17 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF37474F),
+      backgroundColor: AppColors.primary,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF37474F),
-        elevation: 0,
-        title: const Text('Forgot Password'),
+        backgroundColor: AppColors.primary,
+        toolbarHeight: 180,
+        centerTitle: true,
+        title: const Text("Forgot Password", style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold)),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Container(
+            height: MediaQuery.of(context).size.height - 180,
             width: double.infinity,
             padding: const EdgeInsets.fromLTRB(24, 30, 24, 28),
             decoration: const BoxDecoration(
@@ -89,22 +92,22 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                 const Text(
                   'Reset your password',
                   style: TextStyle(
-                    fontSize: 24,
+                    fontSize: 26,
                     fontWeight: FontWeight.w700,
                     color: Color(0xFF0F172A),
                   ),
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: 12),
                 const Text(
                   'Enter your email and we will send a reset link.',
                   style: TextStyle(color: Color(0xFF64748B), height: 1.4),
                 ),
-                const SizedBox(height: 26),
+                const SizedBox(height: 36),
                 const Text(
                   'Email',
                   style: TextStyle(fontWeight: FontWeight.w600),
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: 18),
                 Form(
                   key: _formKey,
                   child: TextFormField(
@@ -126,14 +129,14 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 30),
                 SizedBox(
                   width: double.infinity,
                   height: 52,
                   child: ElevatedButton(
                     onPressed: _isLoading ? null : _sendResetLink,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF37474F),
+                      backgroundColor: AppColors.primary,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),

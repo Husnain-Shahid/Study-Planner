@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../../core/services/firestore_service.dart';
 import '../../core/models/models.dart';
+import '../../core/theme/app_theme.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -74,16 +75,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF37474F),
+      backgroundColor: AppColors.primary, //const Color(0xFF37474F),
       appBar: AppBar(
-        backgroundColor: const Color(0xFF37474F),
+        backgroundColor: AppColors.primary,
         elevation: 0,
-        toolbarHeight: 120,
+        toolbarHeight: 180,
         centerTitle: true,
         title: const Text("Create Account", style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold)),
       ),
       body: Container(
         width: double.infinity,
+        height: MediaQuery.of(context).size.height - 180,
         decoration: const BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.only(topLeft: Radius.circular(40), topRight: Radius.circular(40)),
@@ -95,6 +97,26 @@ class _RegisterScreenState extends State<RegisterScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                const Center(
+                  child: Text(
+                    "Welcome Buddy!",
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                const Center(
+                  child: Text(
+                    "Let's keep the momentum begin.",
+                    style: TextStyle(color: Colors.grey, fontSize: 14),
+                  ),
+                ),
+                const SizedBox(height: 30),
+
+
                 const Text("Full Name", style: TextStyle(fontWeight: FontWeight.bold)),
                 const SizedBox(height: 8),
                 TextFormField(
@@ -133,7 +155,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   height: 55,
                   child: ElevatedButton(
                     onPressed: _isLoading ? null : _signUp,
-                    style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF37474F)),
+                    style: ElevatedButton.styleFrom(backgroundColor: AppColors.primary),
                     child: _isLoading 
                         ? const CircularProgressIndicator(color: Colors.white) 
                         : const Text("Sign Up", style: TextStyle(color: Colors.white, fontSize: 16)),
