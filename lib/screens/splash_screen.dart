@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'dart:async';
 
 class SplashScreen extends StatefulWidget {
@@ -19,9 +20,11 @@ class _SplashScreenState extends State<SplashScreen> {
     await Future.delayed(const Duration(seconds: 3));
     if (!mounted) return;
 
-    // TODO: Replace with Firebase Auth check.
-    // Show onboarding first (change to '/login' after onboarding flow is complete)
-    Navigator.pushReplacementNamed(context, '/onboarding');
+    final currentUser = FirebaseAuth.instance.currentUser;
+    Navigator.pushReplacementNamed(
+      context,
+      currentUser != null ? '/dashboard' : '/onboarding',
+    );
   }
 
   @override
