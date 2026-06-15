@@ -5,7 +5,7 @@ import '../../core/models/models.dart';
 
 class GeminiService {
   // ⚠️ Replace with your key from https://aistudio.google.com
-  static String apiKey = 'AQ.Ab8RN6LRTrtrEz4tZG8Iq4N9rtiKIMu8WOo_RSx85hl_19yMxA';
+  static String apiKey = 'GEMINI_API_KEY';
   static const _baseUrl =
       'https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent';
 
