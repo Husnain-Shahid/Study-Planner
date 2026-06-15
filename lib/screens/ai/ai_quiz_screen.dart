@@ -738,3 +738,4 @@ class _ResultRow extends StatelessWidget {
     );
   }
 }
+

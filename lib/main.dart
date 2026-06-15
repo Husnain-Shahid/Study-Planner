@@ -1,36 +1,48 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:provider/provider.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'core/theme/app_theme.dart';
+import 'core/theme/theme_provider.dart';
 import 'screens/screens.dart';
+import 'firebase_options.dart';
+import 'screens/book_notes_screen.dart';
+import 'package:pdfrx/pdfrx.dart'; // Add this
 
-void main() {
-  runApp(const MyApp());
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
+  // If a user is already signed in, start at the dashboard; otherwise start at splash
+  final initialRoute = FirebaseAuth.instance.currentUser == null ? '/' : '/dashboard';
+  await pdfrxFlutterInitialize(); // Initialize the PDF library
+  runApp(
+    ChangeNotifierProvider(
+      create: (_) => ThemeProvider(),
+      child: MyApp(initialRoute: initialRoute),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final String initialRoute;
+
+  const MyApp({super.key, required this.initialRoute});
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = context.watch<ThemeProvider>();
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'StudyMate AI',
+      theme: AppTheme.lightTheme,
+      darkTheme: AppTheme.darkTheme,
+      themeMode: themeProvider.themeMode,
 
-      // ✅ Modern Theme (Material 3 safe)
-      theme: ThemeData(
-        useMaterial3: true,
-        colorSchemeSeed: Colors.deepPurple,
-
-        appBarTheme: const AppBarTheme(
-          centerTitle: true,
-          elevation: 0,
-        ),
-
-        // ✅ FIXED (new Flutter)
-        cardTheme: const CardThemeData(
-          elevation: 4,
-        ),
-      ),
-
-      initialRoute: '/',
+      initialRoute: initialRoute,
 
       routes: {
         '/': (context) => const SplashScreen(),
@@ -41,12 +53,18 @@ class MyApp extends StatelessWidget {
         '/subjects': (context) => const SubjectsScreen(),
         '/tasks': (context) => const TasksScreen(),
         '/planner': (context) => const PlannerScreen(),
-        '/pomodoro': (context) => const PomodoroScreen(),
+        '/pomodoro': (context) => const TimerScreen(),
         '/notes': (context) => const NotesScreen(),
         '/flashcards': (context) => const FlashcardsScreen(),
         '/ai': (context) => const AIChatScreen(),
+        '/ai-quiz': (context) => const AiQuizScreen(),
         '/analytics': (context) => const AnalyticsScreen(),
         '/profile': (context) => const ProfileScreen(),
+        '/settings': (context) => const SettingsScreen(),
+        '/notifications': (context) => const NotificationScreen(),
+        '/exam': (context) => const ExamsScreen(),
+        '/ai_quiz': (context) => const AiQuizScreen(),
+        '/book-notes': (context) => const BookNotesScreen(),
       },
     );
   }

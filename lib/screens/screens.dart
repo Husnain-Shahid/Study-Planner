@@ -18,3 +18,4 @@ export 'settings_screen.dart';
 export 'notification_screen.dart';
 export 'reminder_screen.dart';
 export 'exams_screen.dart';
+

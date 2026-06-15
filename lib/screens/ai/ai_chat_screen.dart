@@ -448,3 +448,4 @@ class _TypingIndicator extends StatelessWidget {
     );
   }
 }
+

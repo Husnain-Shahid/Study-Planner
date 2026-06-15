@@ -703,3 +703,4 @@ class _FilterPill extends StatelessWidget {
 extension on Brightness {
   static Brightness get dark => Brightness.dark;
 }
+
